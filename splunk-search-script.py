@@ -15,7 +15,7 @@ def main():
     # Get the login header
     header = auth()
 
-    # Take query input and create a query using search command
+    # Take query input and create a query using search commanda
     search = str(input("Enter your search query:"))
     search_command = "search "
     search_query = f"{search_command}{search}"
@@ -26,10 +26,9 @@ def main():
     }
     searchsplunk(search_params, header)
 
-    choice = input("Do you want to do another search?(y/n)")
-
     # Continue the code if user wants to do more searches
     while True:
+        choice = input("Do you want to do another search?(y/n)")
         if choice == "y":
             search = str(input("Enter your search query:"))
             search_command = "search "
@@ -45,29 +44,29 @@ def main():
             print("Invalid choice. Please enter y or n.")
 
 def auth():
-    try:
-        # Get the username and password from user
-        username = input("Enter your username: ")
-        password = getpass("Enter your password: ")
-        
-        # Make an API request to get a session key
-        response = requests.post(splunk_login_url, data={"username": username, "password": password}, verify=False)
+    while True:
+        try:
+            # Get the username and password from user
+            username = input("Enter your username: ")
+            password = getpass("Enter your password: ")
+            
+            # Make an API request to get a session key
+            response = requests.post(splunk_login_url, data={"username": username, "password": password}, verify=False)
 
-        # Extract the session key from the response content
-        session_key = response.content.decode()
+            # Extract the session key from the response content
+            session_key = response.content.decode()
 
-        # Use regex to get the sessionkey from response. It is between <sessionKey> and </sessionKey>.
-        match_key = re.findall(r'<sessionKey>(.*?)<\/sessionKey>', session_key)
+            # Use regex to get the sessionkey from response. It is between <sessionKey> and </sessionKey>.
+            match_key = re.findall(r'<sessionKey>(.*?)<\/sessionKey>', session_key)
 
-        # Since the match_key is a list, extract it as str using following line
-        match_keystr = str(match_key[0])
+            # Since the match_key is a list, extract it as str using following line
+            match_keystr = str(match_key[0])
 
-        # Set the session key as a header in the search API request
-        headers = {"Authorization": f"Splunk {match_keystr}"}
-        return(headers) # Return header for searching
-    except:
-        print("Not authenticated!")
-        auth()
+            # Set the session key as a header in the search API request
+            headers = {"Authorization": f"Splunk {match_keystr}"}
+            return(headers) # Return header for searching
+        except:
+            print("Not authenticated!")
     
 def searchsplunk(search_params, header):
     try:
